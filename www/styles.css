@@ -1,0 +1,77 @@
+/* Main app styling */
+.skin-blue .main-header .logo {
+  font-weight: bold;
+  font-size: 24px;
+}
+
+/* Input section styling */
+.shiny-input-container {
+  margin-bottom: 15px;
+}
+
+/* Text area styling */
+#textInput {
+  width: 100%;
+  min-height: 200px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 10px;
+  font-size: 14px;
+}
+
+/* Button styling */
+.btn-primary {
+  background-color: #2C82E5;
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+
+/* Preview box styling */
+#textPreview {
+  min-height: 150px;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 15px;
+  white-space: pre-wrap;
+}
+
+/* Word cloud container */
+#wordCloud {
+  min-height: 400px;
+}
+
+/* Box styling */
+.box {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+
+/* Make sure sidebar is visible */
+.skin-blue .main-sidebar {
+  display: block !important;
+  visibility: visible !important;
+}
+
+/* Ensure input elements are visible */
+.radio, .checkbox {
+  display: block;
+  margin: 10px 0;
+}
+
+/* Fix for text preview */
+pre {
+  white-space: pre-wrap;
+  word-break: keep-all;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .main-sidebar {
+    width: 100%;
+    position: relative;
+  }
+
+  .content-wrapper {
+    margin-left: 0 !important;
+  }
+}

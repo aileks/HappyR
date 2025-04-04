@@ -1,0 +1,253 @@
+server <- function(input, output, session) {
+  # Reactive values to store analysis results
+  results <- reactiveVal(NULL)
+
+  # Get input text
+  getText <- reactive({
+    if (input$inputType == "text") {
+      # Direct text input
+      text <- input$textInput
+    } else if (input$inputType == "file" && !is.null(input$fileInput)) {
+      # File input
+      ext <- tools::file_ext(input$fileInput$name)
+
+      if (ext == "csv") {
+        df <- read.csv(input$fileInput$datapath, stringsAsFactors = FALSE)
+        text <- paste(df[, 1], collapse = " ")
+      } else {
+        text <- readLines(input$fileInput$datapath, warn = FALSE)
+        text <- paste(text, collapse = " ")
+      }
+    } else {
+      text <- ""
+    }
+
+    # Handle example text selection
+    if (input$exampleText == "positive") {
+      text <- "I absolutely loved this product! It exceeded all my expectations and worked perfectly. The customer service was excellent and I would highly recommend this to anyone."
+    } else if (input$exampleText == "negative") {
+      text <- "This was terrible. The product broke after one use and customer service was unhelpful. I wasted my money and would not recommend this to anyone. Very disappointed."
+    } else if (input$exampleText == "neutral") {
+      text <- "The product arrived on time. It has some good features and some limitations. It works as described in the manual. Assembly took about 30 minutes."
+    }
+
+    return(text)
+  })
+
+  # Preview the input text
+  output$textPreview <- renderText({
+    text <- getText()
+    if (nchar(text) > 1000) {
+      paste0(substr(text, 1, 1000), "... (text truncated for preview)")
+    } else {
+      text
+    }
+  })
+
+  # Analyze button action
+  observeEvent(input$analyzeBtn, {
+    text <- getText()
+
+    if (nchar(text) < 10) {
+      showNotification("Please enter more text to analyze", type = "error")
+      return(NULL)
+    }
+
+    # Show progress notification
+    id <- showNotification("Analyzing text...", duration = NULL, closeButton = FALSE)
+    on.exit(removeNotification(id))
+
+    # Perform analysis
+    analysis_results <- analyze_sentiment(text)
+    results(analysis_results)
+
+    # Switch to analysis tab
+    updateTabItems(session, "sidebar", "analysis")
+  })
+
+  # Overall sentiment gauge
+  output$sentimentGauge <- renderPlotly({
+    req(results())
+
+    score <- results()$overall
+
+    plot_ly(
+      type = "indicator",
+      mode = "gauge+number",
+      value = score,
+      title = list(text = "Sentiment Score"),
+      gauge = list(
+        axis = list(range = list(-1, 1)),
+        bar = list(color = ifelse(score >= 0, "#2C82E5", "#E53935")),
+        steps = list(
+          list(range = c(-1, -0.6), color = "#E53935"),
+          list(range = c(-0.6, -0.2), color = "#FB8C00"),
+          list(range = c(-0.2, 0.2), color = "#FFEB3B"),
+          list(range = c(0.2, 0.6), color = "#8BC34A"),
+          list(range = c(0.6, 1), color = "#43A047")
+        ),
+        threshold = list(
+          line = list(color = "black", width = 4),
+          thickness = 0.75,
+          value = score
+        )
+      )
+    )
+  })
+
+  # Sentiment summary box
+  output$sentimentSummary <- renderValueBox({
+    req(results())
+
+    score <- results()$overall
+
+    if (score >= 0.5) {
+      sentiment <- "Very Positive"
+      color <- "green"
+    } else if (score >= 0.1) {
+      sentiment <- "Positive"
+      color <- "olive"
+    } else if (score > -0.1) {
+      sentiment <- "Neutral"
+      color <- "yellow"
+    } else if (score > -0.5) {
+      sentiment <- "Negative"
+      color <- "orange"
+    } else {
+      sentiment <- "Very Negative"
+      color <- "red"
+    }
+
+    valueBox(
+      sentiment,
+      paste("Overall Sentiment: ", round(score, 2)),
+      icon = icon("face-smile"),
+      color = color
+    )
+  })
+
+  # Sentiment breakdown bar chart
+  output$sentimentBreakdown <- renderPlotly({
+    req(results())
+
+    bing <- results()$bing
+
+    df <- data.frame(
+      Category = c("Positive", "Negative"),
+      Count = c(bing$positive, bing$negative)
+    )
+
+    plot_ly(df,
+      x = ~Category, y = ~Count, type = "bar",
+      marker = list(color = c("#43A047", "#E53935"))
+    ) %>%
+      layout(
+        title = "Positive vs Negative Words",
+        xaxis = list(title = ""),
+        yaxis = list(title = "Word Count")
+      )
+  })
+
+  # Emotion plot from NRC lexicon
+  output$emotionPlot <- renderPlotly({
+    req(results())
+
+    nrc <- results()$nrc
+
+    # Filter to just emotions (exclude positive/negative)
+    emotions <- nrc %>%
+      filter(!sentiment %in% c("positive", "negative")) %>%
+      arrange(desc(n))
+
+    # Colors for emotions
+    emotion_colors <- c(
+      "anger" = "#E53935",
+      "anticipation" = "#FB8C00",
+      "disgust" = "#8E24AA",
+      "fear" = "#7B1FA2",
+      "joy" = "#FFD600",
+      "sadness" = "#42A5F5",
+      "surprise" = "#26A69A",
+      "trust" = "#66BB6A"
+    )
+
+    colors <- emotion_colors[emotions$sentiment]
+
+    plot_ly(emotions,
+      x = ~sentiment, y = ~n, type = "bar",
+      marker = list(color = colors)
+    ) %>%
+      layout(
+        title = "Emotion Analysis",
+        xaxis = list(title = "", categoryorder = "total descending"),
+        yaxis = list(title = "Word Count")
+      )
+  })
+
+  # Top words plot
+  output$topWordsPlot <- renderPlotly({
+    req(results())
+
+    tokens <- results()$tokens
+    exclude <- input$excludeStopwords
+
+    top_words <- get_top_words(tokens, n = 10, exclude_stopwords = exclude)
+
+    plot_ly(top_words,
+      x = ~n, y = ~ reorder(word, n), type = "bar",
+      orientation = "h",
+      marker = list(color = "#2C82E5")
+    ) %>%
+      layout(
+        title = "Most Frequent Words",
+        xaxis = list(title = "Frequency"),
+        yaxis = list(title = "")
+      )
+  })
+
+  # Word cloud
+  output$wordCloud <- renderWordcloud2({
+    req(results())
+
+    tokens <- results()$tokens
+    num_words <- input$numWords
+    shape <- input$cloudShape
+
+    # Get word frequencies
+    word_freqs <- get_top_words(tokens, n = num_words, exclude_stopwords = TRUE)
+
+    # Create word cloud
+    if (nrow(word_freqs) > 0) {
+      wordcloud2(word_freqs, size = 0.6, shape = shape)
+    }
+  })
+
+  # About content
+  output$aboutContent <- renderUI({
+    HTML("
+      <div style='font-size: 16px;'>
+        <p>HappyR text sentiment analyzer app uses Natural Language Processing (NLP) techniques to analyze the sentiment and emotion of text.</p>
+
+        <h4>Features:</h4>
+        <ul>
+          <li>Overall sentiment scoring</li>
+          <li>Positive/negative word breakdown</li>
+          <li>Emotion analysis</li>
+          <li>Word frequency visualization</li>
+          <li>Interactive word cloud</li>
+        </ul>
+
+        <h4>How It Works:</h4>
+        <p>The app uses multiple sentiment lexicons:</p>
+        <ul>
+          <li><strong>AFINN</strong>: Words scored from -5 (negative) to +5 (positive)</li>
+          <li><strong>Bing</strong>: Binary positive/negative classifications</li>
+          <li><strong><a href='http://saifmohammad.com/WebPages/lexicons.html' target=_blank>NRC</a></strong>: Emotions (anger, fear, joy, etc.) and sentiment</li>
+          <li><strong>Syuzhet</strong>: Alternative sentiment analysis method</li>
+        </ul>
+
+        <p>Created with R Shiny.</p>
+      </div>
+    ")
+  })
+}
