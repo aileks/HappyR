@@ -74,8 +74,8 @@ ui <- dashboardPage(
               selectInput("exampleText", "Or try an example:",
                 choices = c(
                   "None" = "",
-                  "Positive Review" = "positive",
-                  "Negative Review" = "negative",
+                  "Positive Text" = "positive",
+                  "Negative Text" = "negative",
                   "Neutral Text" = "neutral"
                 )
               )

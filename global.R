@@ -30,7 +30,7 @@ clean_text <- function(text) {
   text <- str_replace_all(text, "\\s+", " ")
   text <- str_trim(text)
 
-  return(text)
+  text
 }
 
 tokenize_text <- function(text) {

@@ -20,14 +20,29 @@ server <- function(input, output, session) {
 
     # Handle example text selection
     if (input$exampleText == "positive") {
-      text <- "I absolutely loved this product! It exceeded all my expectations and worked perfectly. The customer service was excellent and I would highly recommend this to anyone."
+      file_path <- file.path("data", "sample-pos.txt")
+      text <- readLines(file_path, warn = FALSE)
+      text <- paste(text, collapse = "\n")
+      text <- gsub("\n\n+", " PARAGRAPH_BREAK ", text)
+      text <- gsub("\n", " ", text)
+      text <- gsub("PARAGRAPH_BREAK", "\n\n", text)
     } else if (input$exampleText == "negative") {
-      text <- "This was terrible. The product broke after one use and customer service was unhelpful. I wasted my money and would not recommend this to anyone. Very disappointed."
+      file_path <- file.path("data", "sample-neg.txt")
+      text <- readLines(file_path, warn = FALSE)
+      text <- paste(text, collapse = "\n")
+      text <- gsub("\n\n+", " PARAGRAPH_BREAK ", text)
+      text <- gsub("\n", " ", text)
+      text <- gsub("PARAGRAPH_BREAK", "\n\n", text)
     } else if (input$exampleText == "neutral") {
-      text <- "The product arrived on time. It has some good features and some limitations. It works as described in the manual. Assembly took about 30 minutes."
+      file_path <- file.path("data", "sample-neut.txt")
+      text <- readLines(file_path, warn = FALSE)
+      text <- paste(text, collapse = "\n")
+      text <- gsub("\n\n+", " PARAGRAPH_BREAK ", text)
+      text <- gsub("\n", " ", text)
+      text <- gsub("PARAGRAPH_BREAK", "\n\n", text)
     }
 
-    return(text)
+    text
   })
 
   # Preview the input text
@@ -46,7 +61,7 @@ server <- function(input, output, session) {
 
     if (nchar(text) < 10) {
       showNotification("Please enter more text to analyze", type = "error")
-      return(NULL)
+      NULL
     }
 
     # Show progress notification
@@ -159,12 +174,12 @@ server <- function(input, output, session) {
     emotion_colors <- c(
       "anger" = "#E53935",
       "anticipation" = "#FB8C00",
-      "disgust" = "#8E24AA",
+      "disgust" = "#8DB85F",
       "fear" = "#7B1FA2",
       "joy" = "#FFD600",
       "sadness" = "#42A5F5",
       "surprise" = "#26A69A",
-      "trust" = "#66BB6A"
+      "trust" = "#C7C7C7"
     )
 
     colors <- emotion_colors[emotions$sentiment]
