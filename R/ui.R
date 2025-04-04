@@ -1,5 +1,5 @@
 ui <- dashboardPage(
-  skin = "blue",
+  title = "HappyR - Text Sentiment Analysis",
 
   # Header with enhanced styling
   dashboardHeader(

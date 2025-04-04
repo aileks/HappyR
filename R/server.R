@@ -97,10 +97,10 @@ server <- function(input, output, session) {
         ifelse(score > -0.1, "#FFEB3B", # Neutral
           ifelse(score > -0.5, "#FB8C00", # Negative
             "#E53935"
-          )
+          ) # Very negative
         )
       )
-    ) # Very negative
+    )
 
     plot_ly(
       type = "indicator",

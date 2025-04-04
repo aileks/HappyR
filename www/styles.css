@@ -1,6 +1,3 @@
-/* Modern Dashboard Styling */
-
-/* Overall Document Styling */
 body {
   font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   background-color: #f5f7fa;
@@ -56,7 +53,6 @@ body {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   border-top: 3px solid #3498db;
   margin-bottom: 20px;
-  margin-top: 5px; /* Reduced top margin to bring boxes closer to headers */
 }
 
 .box-primary {
@@ -75,8 +71,9 @@ body {
   border-top-color: #f39c12;
 }
 
-/* Box Headers */
 .box-header {
+  border-top-left-radius: 7px;
+  border-top-right-radius: 7px;
   padding: 15px;
   border-bottom: 1px solid #f4f4f4;
 }
@@ -90,9 +87,21 @@ body {
   background-color: rgba(255, 255, 255, 0.9);
 }
 
-/* Box Content */
+
 .box-body {
   padding: 20px;
+  border-bottom-left-radius: 7px;
+  border-bottom-right-radius: 7px;
+}
+
+.box-footer {
+  border-bottom-left-radius: 7px;
+  border-bottom-right-radius: 7px;
+}
+
+.box-body:last-child {
+  border-bottom-left-radius: 7px;
+  border-bottom-right-radius: 7px;
 }
 
 /* Button Styling */
@@ -124,7 +133,6 @@ body {
 .small-box {
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  margin-top: 5px; /* Reduced top margin */
 }
 
 .bg-green { background-color: #00a65a !important; }
@@ -136,7 +144,6 @@ body {
 /* Value Box Styling */
 .value-box {
   border-radius: 8px;
-  margin-top: 5px; /* Reduced top margin */
 }
 
 /* Text Preview */
@@ -204,7 +211,13 @@ body {
   margin-top: 15px;
 }
 
-.shiny-notification {
+#shiny-notification-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+#shiny-notification {
   border-radius: 6px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
