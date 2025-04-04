@@ -1,14 +1,10 @@
 server <- function(input, output, session) {
-  # Reactive values to store analysis results
   results <- reactiveVal(NULL)
 
-  # Get input text
   getText <- reactive({
     if (input$inputType == "text") {
-      # Direct text input
       text <- input$textInput
     } else if (input$inputType == "file" && !is.null(input$fileInput)) {
-      # File input
       ext <- tools::file_ext(input$fileInput$name)
 
       if (ext == "csv") {
@@ -226,7 +222,7 @@ server <- function(input, output, session) {
   output$aboutContent <- renderUI({
     HTML("
       <div style='font-size: 16px;'>
-        <p>HappyR text sentiment analyzer app uses Natural Language Processing (NLP) techniques to analyze the sentiment and emotion of text.</p>
+        <p>This Text Sentiment Analyzer app uses Natural Language Processing techniques to analyze the sentiment and emotion of text.</p>
 
         <h4>Features:</h4>
         <ul>
@@ -242,10 +238,32 @@ server <- function(input, output, session) {
         <ul>
           <li><strong>AFINN</strong>: Words scored from -5 (negative) to +5 (positive)</li>
           <li><strong>Bing</strong>: Binary positive/negative classifications</li>
-          <li><strong><a href='http://saifmohammad.com/WebPages/lexicons.html' target=_blank>NRC</a></strong>: Emotions (anger, fear, joy, etc.) and sentiment</li>
+          <li><strong>NRC</strong>: Emotions (anger, fear, joy, etc.) and sentiment</li>
           <li><strong>Syuzhet</strong>: Alternative sentiment analysis method</li>
         </ul>
 
+        <h4>Lexicon Citations:</h4>
+        <p><strong>AFINN Lexicon:</strong><br>
+        Finn Årup Nielsen. (2011). A new ANEW: Evaluation of a word list for sentiment analysis in microblogs.
+        <i>Proceedings of the ESWC2011 Workshop on 'Making Sense of Microposts': Big things come in small packages.</i>
+        Volume 718 in CEUR Workshop Proceedings: 93-98.</p>
+
+        <p><strong>Bing Lexicon:</strong><br>
+        Minqing Hu and Bing Liu. (2004). Mining and summarizing customer reviews.
+        <i>Proceedings of the ACM SIGKDD International Conference on Knowledge Discovery and Data Mining</i> (KDD-2004).</p>
+
+        <p><strong>NRC Emotion Lexicon:</strong><br>
+        Saif M. Mohammad and Peter D. Turney. (2013). Crowdsourcing a Word-Emotion Association Lexicon.
+        <i>Computational Intelligence</i>, 29(3): 436-465.</p>
+
+        <p><strong>Syuzhet:</strong><br>
+        Matthew Jockers. (2017). Syuzhet: Extract Sentiment and Plot Arcs from Text.
+        <a href='https://github.com/mjockers/syuzhet' target='_blank'>https://github.com/mjockers/syuzhet</a></p>
+
+        <p><strong>R Packages:</strong><br>
+        This app uses the tidytext, textdata, and syuzhet R packages for sentiment analysis.</p>
+
+        <hr>
         <p>Created with R Shiny.</p>
       </div>
     ")

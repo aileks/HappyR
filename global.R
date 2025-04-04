@@ -10,10 +10,9 @@ library(tm)
 library(stringr)
 library(DT)
 
-# Global variables and constants
 MAX_FILE_SIZE <- 5 * 1024^2 # 5MB max file size
 
-# Function to clean text
+# Prep text for analysis
 clean_text <- function(text) {
   # Convert to lowercase
   text <- tolower(text)
@@ -34,19 +33,14 @@ clean_text <- function(text) {
   return(text)
 }
 
-# Function to tokenize text
 tokenize_text <- function(text) {
-  # Create a tibble with text
   tibble(text = text) %>%
     unnest_tokens(word, text)
 }
 
-# Function to analyze sentiment using different lexicons
+# Analyze sentiment using different lexicons
 analyze_sentiment <- function(text) {
-  # Clean the text
   clean <- clean_text(text)
-
-  # Get tokens
   tokens <- tokenize_text(clean)
 
   # Get sentiment scores using different lexicons
@@ -97,7 +91,6 @@ analyze_sentiment <- function(text) {
     syuzhet_score / 5 # Normalize Syuzhet to -1 to 1
   ), na.rm = TRUE)
 
-  # Return results
   results <- list(
     afinn = afinn_scores,
     bing = bing_scores,
@@ -107,10 +100,10 @@ analyze_sentiment <- function(text) {
     tokens = tokens
   )
 
-  return(results)
+  results
 }
 
-# Function to get top words by frequency
+# Get top words by frequency
 get_top_words <- function(tokens, n = 50, exclude_stopwords = TRUE) {
   if (exclude_stopwords) {
     tokens <- tokens %>%
@@ -121,18 +114,18 @@ get_top_words <- function(tokens, n = 50, exclude_stopwords = TRUE) {
     count(word, sort = TRUE) %>%
     head(n)
 
-  return(top_words)
+  top_words
 }
 
-# Function to get sentiment by words
+# Get sentiment by words
 get_sentiment_by_words <- function(tokens, lexicon = "bing") {
   sentiment_words <- tokens %>%
     inner_join(get_sentiments(lexicon), by = "word")
 
-  return(sentiment_words)
+  sentiment_words
 }
 
-# Load lexicons in advance (to avoid first-run delay)
+# Load lexicons in advance to avoid first-run delay
 get_sentiments("afinn")
 get_sentiments("bing")
 get_sentiments("nrc")
