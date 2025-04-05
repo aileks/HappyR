@@ -1,0 +1,13 @@
+name: HappyR
+title: HappyR
+username: aileks
+account: aileks
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 14436819
+bundleId: 10059523
+url: https://aileks.shinyapps.io/HappyR/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: .Rbuildignore|.RData|.Rprofile|img/preview.png|README.md

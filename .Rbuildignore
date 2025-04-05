@@ -1,0 +1,8 @@
+^renv$
+^renv\.lock$
+README.md
+.Rhistory
+.Rdata
+.Rprofile
+*.rproj
+/img
