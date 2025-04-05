@@ -2,6 +2,8 @@
 
 HappyR (pronounced like "happy hour") is an application for analyzing sentiment and emotions in text using various lexicons and natural language processing techniques.
 
+![Preview](img/preview.png)
+
 ## Features
 
 - Text input via direct typing or loading a text file
