@@ -112,10 +112,25 @@ analyze_sentiment <- function(text) {
   results
 }
 
+# Load lexicons from local directory
+get_local_sentiments <- function(lexicon_name) {
+  if (lexicon_name == "afinn") {
+    readRDS("lexicons/afinn/afinn.rds")
+  } else if (lexicon_name == "nrc") {
+    readRDS("lexicons/nrc/NRCWordEmotion.rds")
+  } else {
+    stop("Unsupported lexicon name")
+  }
+}
+
 # Load lexicons in advance to avoid first-run delay
-get_sentiments("afinn")
 get_sentiments("bing")
-get_sentiments("nrc")
+# DEV VERSION
+# get_sentiments("afinn")
+# get_sentiments("nrc")
+# PROD VERSION
+get_local_sentiments("afinn")
+get_local_sentiments("nrc")
 
 # ---------------------------------------------------- #
 
