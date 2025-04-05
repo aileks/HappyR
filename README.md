@@ -33,10 +33,13 @@ The application analyzes text using multiple complementary sentiment lexicons:
 
 ## Installation
 
-```r
-# Clone this repository
+1. Clone this repository.
+```bash
 git clone https://github.com/aileks/HappyR.git
+```
 
+2. Install the packages in your R Studio console.
+```r
 # Install required packages
 install.packages(c("shiny", "shinydashboard", "tidyverse", "tidytext", 
                   "textdata", "syuzhet", "plotly", "wordcloud2", 
