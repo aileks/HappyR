@@ -163,14 +163,13 @@ ui <- dashboardPage(
     )
   ),
 
-  # Main content area with enhanced styling
+  # Main content area
   dashboardBody(
-    # Include custom CSS
     tags$head(
+      tags$link(rel = "icon", href = "favicon.ico"),
       tags$link(rel = "stylesheet", type = "text/css", href = "styles.css"),
       tags$link(rel = "stylesheet", href = "https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap"),
       tags$style(HTML("
-        /* Additional inline styles */
         .content-wrapper {background-color: #f5f7fa;}
         .tab-content {padding-top: 20px;}
         .btn {border-radius: 4px; text-transform: uppercase; font-weight: 500; letter-spacing: 0.5px;}
@@ -178,7 +177,7 @@ ui <- dashboardPage(
       "))
     ),
     tabItems(
-      # Text Input Tab - Improved layout
+      # Text Input Tab
       tabItem(
         tabName = "input",
         fluidRow(
@@ -190,7 +189,7 @@ ui <- dashboardPage(
               solidHeader = TRUE,
               width = 12,
 
-              # Input method selection with better styling
+              # Input method selection
               radioButtons("inputType", "Input Method:",
                 choices = c(
                   "Text Input" = "text",
@@ -200,7 +199,7 @@ ui <- dashboardPage(
                 inline = TRUE
               ),
 
-              # Text area for direct input with enhanced styling
+              # Text area for direct input
               conditionalPanel(
                 condition = "input.inputType == 'text'",
                 textAreaInput("textInput", "Enter Text:",
@@ -209,7 +208,7 @@ ui <- dashboardPage(
                 )
               ),
 
-              # File upload with better file type indicators
+              # File loader
               conditionalPanel(
                 condition = "input.inputType == 'file'",
                 fileInput("fileInput", "Upload Text File:",
@@ -225,7 +224,7 @@ ui <- dashboardPage(
                 helpText("Max file size: 5MB")
               ),
 
-              # Analysis button with enhanced styling
+              # Analysis button
               tags$div(
                 style = "margin-top: 20px;",
                 actionButton("analyzeBtn", "Analyze Sentiment",
@@ -236,7 +235,7 @@ ui <- dashboardPage(
                 )
               ),
 
-              # Example text dropdown with better styling
+              # Example text dropdown
               div(
                 style = "margin-top: 20px;",
                 selectInput("exampleText", "Or try an example:",
@@ -271,7 +270,7 @@ ui <- dashboardPage(
         )
       ),
 
-      # Analysis Tab - Enhanced visualization layout
+      # Analysis Tab
       tabItem(
         tabName = "analysis",
         fluidRow(
@@ -330,7 +329,7 @@ ui <- dashboardPage(
         )
       ),
 
-      # Word Cloud Tab - Enhanced styling
+      # Word Cloud Tab
       tabItem(
         tabName = "wordcloud",
         fluidRow(
@@ -384,7 +383,7 @@ ui <- dashboardPage(
         )
       ),
 
-      # About Tab - Enhanced with better typography
+      # About Tab
       tabItem(
         tabName = "about",
         fluidRow(
@@ -476,9 +475,9 @@ server <- function(input, output, session) {
       return(NULL)
     }
 
-    # Show progress notification with improved styling
+    # Show progress notification
     withProgress(message = "Analyzing text", value = 0, {
-      # Add an animation effect
+      # Animation effect
       for (i in 1:5) {
         incProgress(1 / 5, detail = paste("Step", i))
         Sys.sleep(0.1)
@@ -496,13 +495,12 @@ server <- function(input, output, session) {
     updateTabItems(session, "sidebar", "analysis")
   })
 
-  # Overall sentiment gauge with improved styling
+  # Overall sentiment gauge
   output$sentimentGauge <- renderPlotly({
     req(results())
 
     score <- results()$overall
 
-    # Custom color based on sentiment score
     gauge_color <- ifelse(
       score >= 0.5, "#43A047", # Very positive
       ifelse(score >= 0.1, "#8BC34A", # Positive
@@ -550,7 +548,7 @@ server <- function(input, output, session) {
       )
   })
 
-  # Sentiment summary box with improved styling
+  # Sentiment summary box
   output$sentimentSummary <- renderValueBox({
     req(results())
 
@@ -586,7 +584,7 @@ server <- function(input, output, session) {
     )
   })
 
-  # Sentiment breakdown bar chart with improved styling
+  # Sentiment breakdown bar chart
   output$sentimentBreakdown <- renderPlotly({
     req(results())
 
@@ -639,7 +637,7 @@ server <- function(input, output, session) {
       )
   })
 
-  # Emotion plot from NRC lexicon with improved styling
+  # Emotion plot from NRC lexicon
   output$emotionPlot <- renderPlotly({
     req(results())
 
@@ -650,7 +648,7 @@ server <- function(input, output, session) {
       filter(!sentiment %in% c("positive", "negative")) %>%
       arrange(desc(n))
 
-    # Improved colors for emotions with better accessibility
+    # Improved colors for emotions
     emotion_colors <- c(
       "anger" = "#E53935", # Red
       "anticipation" = "#FB8C00", # Orange
@@ -662,7 +660,6 @@ server <- function(input, output, session) {
       "trust" = "#66BB6A" # Green
     )
 
-    # Extract colors in the right order
     colors <- emotion_colors[emotions$sentiment]
 
     plot_ly(emotions,
@@ -703,7 +700,7 @@ server <- function(input, output, session) {
       )
   })
 
-  # Top words plot with improved styling
+  # Top words plot
   output$topWordsPlot <- renderPlotly({
     req(results())
 
@@ -756,18 +753,16 @@ server <- function(input, output, session) {
       )
   })
 
-  # Word cloud with improved styling
+  # Word cloud
   output$wordCloud <- renderWordcloud2({
     req(results())
 
     tokens <- results()$tokens
     num_words <- input$numWords
     shape <- input$cloudShape
-
-    # Get word frequencies
     word_freqs <- get_top_words(tokens, n = num_words, exclude_stopwords = TRUE)
 
-    # Create word cloud with enhanced options
+    # Create word cloud
     if (nrow(word_freqs) > 0) {
       wordcloud2(
         word_freqs,
@@ -783,7 +778,7 @@ server <- function(input, output, session) {
     }
   })
 
-  # About content with enhanced styling
+  # About content
   output$aboutContent <- renderUI({
     HTML("
       <div style='font-size: 16px; line-height: 1.6;'>
