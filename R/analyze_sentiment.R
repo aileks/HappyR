@@ -1,44 +1,5 @@
-library(shiny)
-library(shinydashboard)
-library(tidyverse)
-library(tidytext)
-library(textdata)
-library(syuzhet)
-library(plotly)
-library(wordcloud2)
-library(tm)
-library(stringr)
-library(DT)
+source("R/utils.R")
 
-MAX_FILE_SIZE <- 5 * 1024^2 # 5MB max file size
-
-# Prep text for analysis
-clean_text <- function(text) {
-  # Convert to lowercase
-  text <- tolower(text)
-
-  # Remove URLs
-  text <- str_replace_all(text, "http\\S+", "")
-
-  # Remove punctuation
-  text <- str_replace_all(text, "[[:punct:]]", " ")
-
-  # Remove numbers
-  text <- str_replace_all(text, "[[:digit:]]", "")
-
-  # Remove extra whitespace
-  text <- str_replace_all(text, "\\s+", " ")
-  text <- str_trim(text)
-
-  text
-}
-
-tokenize_text <- function(text) {
-  tibble(text = text) %>%
-    unnest_tokens(word, text)
-}
-
-# Analyze sentiment using different lexicons
 analyze_sentiment <- function(text) {
   clean <- clean_text(text)
   tokens <- tokenize_text(clean)
@@ -102,30 +63,3 @@ analyze_sentiment <- function(text) {
 
   results
 }
-
-# Get top words by frequency
-get_top_words <- function(tokens, n = 50, exclude_stopwords = TRUE) {
-  if (exclude_stopwords) {
-    tokens <- tokens %>%
-      anti_join(stop_words, by = "word")
-  }
-
-  top_words <- tokens %>%
-    count(word, sort = TRUE) %>%
-    head(n)
-
-  top_words
-}
-
-# Get sentiment by words
-get_sentiment_by_words <- function(tokens, lexicon = "bing") {
-  sentiment_words <- tokens %>%
-    inner_join(get_sentiments(lexicon), by = "word")
-
-  sentiment_words
-}
-
-# Load lexicons in advance to avoid first-run delay
-get_sentiments("afinn")
-get_sentiments("bing")
-get_sentiments("nrc")
