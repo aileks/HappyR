@@ -612,10 +612,9 @@ server <- function(input, output, session) {
         color = c("#43A047", "#E53935"),
         line = list(color = c("#388E3C", "#D32F2F"), width = 1.5)
       ),
-      text = ~Label,
       textposition = "auto",
       hoverinfo = "text",
-      hovertext = ~ paste(Category, "Words:", Count, "<br>Percentage:", Percentage, "%")
+      hovertext = ~ paste(Category, "Words:", Count)
     ) %>%
       layout(
         title = list(
