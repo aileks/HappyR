@@ -5,7 +5,7 @@ account: aileks
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 14436819
-bundleId: 10079210
+bundleId: 10079270
 url: https://aileks.shinyapps.io/HappyR/
 version: 1
 asMultiple: FALSE

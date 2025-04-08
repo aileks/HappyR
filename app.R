@@ -606,11 +606,6 @@ server <- function(input, output, session) {
       Count = c(bing$positive, bing$negative)
     )
 
-    # Calculate percentages
-    total <- sum(df$Count)
-    df$Percentage <- ifelse(total > 0, round(df$Count / total * 100, 1), 0)
-    df$Label <- paste0(df$Count, " (", df$Percentage, "%)")
-
     plot_ly(df,
       x = ~Category, y = ~Count, type = "bar",
       marker = list(
