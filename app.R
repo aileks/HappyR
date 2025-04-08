@@ -72,11 +72,8 @@ analyze_sentiment <- function(text) {
 
   # Bing lexicon (positive/negative)
   bing_counts <- tokens %>%
-    inner_join(get_local_sentiments("bing"), by = "word") %>%
+    inner_join(get_sentiments("bing"), by = "word") %>%
     count(sentiment)
-  # bing_counts <- tokens %>%
-  #   inner_join(get_sentiments("bing"), by = "word") %>%
-  #   count(sentiment)
 
   # Make sure both positive and negative exist
   if (!"positive" %in% bing_counts$sentiment) {
